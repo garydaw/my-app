@@ -1,9 +1,9 @@
 import './App.css';
-import { useEffect } from 'react';
 import  Player from './Components/Player.js';
 import { useState } from 'react';
+import 'bootstrap/dist/css/bootstrap.css';
 
-//const myPlayerId = '832233694';
+const myPlayerId = '832233694';
 
 export default function App() {
 
@@ -20,11 +20,21 @@ export default function App() {
 }
 
   return (
-    <div className="App">
-      <input type="text" id="playerId"></input>
-      <button onClick={getPlayerInfo}>Search</button>
-      <h1 style={{ color: "green" }}>using JavaScript inbuilt FETCH API</h1>
-      <center>
+    <div className="container">
+      <h1>SWGOH Player Utils</h1>
+      <div className="input-group mb-3">
+          <span className="input-group-text">Player ID</span>
+          <input type="text"  
+            className="form-control"
+            placeholder="Player ID"
+            aria-label="Player ID"
+            aria-describedby="Player ID"
+            id="playerId"
+            value={myPlayerId}></input>
+        
+        <button className="form-control btn btn-primary" onClick={getPlayerInfo}>Search</button>
+      </div>
+      <div className="row">
         {playerUnits.map((unit, index) => {
           return (
             <div
@@ -40,7 +50,7 @@ export default function App() {
             </div>
           );
         })}
-      </center>
+      </div>
     </div>
   );
 }
