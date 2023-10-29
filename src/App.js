@@ -1,31 +1,47 @@
 import './App.css';
-import  Player from './Components/Player';
+import { useEffect } from 'react';
+import  Player from './Components/Player.js';
 import { useState } from 'react';
 
-const apiUrl = 'https://swgoh.gg/api/';
 const myPlayerId = '832233694';
 
-function App() {
+export default function App() {
 
-  const [playerId, setPlayerId] = useState(myPlayerId);
+  const url = 'https://cors-anywhere.herokuapp.com/https://swgoh.gg/api/player/';
+  const [playerUnits,setPlayerUnits] = useState([]);
 
-  function playerSearchHandler() {
-    
-    setPlayerId(document.getElementById('playerId').value);
+  const fetchInfo = () => {
+    return fetch(url + myPlayerId+'/')
+      .then((response) => response.json())
+      .then((data) => setPlayerUnits(data.units))
   }
+
+
+  useEffect(() => {
+    fetchInfo();
+  }, []);
+
 
   return (
     <div className="App">
-      <header className="App-header">
-        <h1>Galaxy of Heros Helpers!</h1>
-        <div>
-          <input type="text" id="playerId"/>
-          <button className="buttonType" onClick={playerSearchHandler}>I'm a button</button>
-        </div>
-        <Player playerId={playerId} changePlayerId={value => setPlayerId(value)} rootAPI={apiUrl}/>
-      </header>
+      <h1 style={{ color: "green" }}>using JavaScript inbuilt FETCH API</h1>
+      <center>
+        {playerUnits.map((unit, index) => {
+          return (
+            <div
+              style={{
+                width: "15em",
+                backgroundColor: "#35D841",
+                padding: 2,
+                borderRadius: 10,
+                marginBlock: 10,
+              }}
+            >
+              <p style={{ fontSize: 20, color: 'white' }}>{unit.data.base_id}</p>
+            </div>
+          );
+        })}
+      </center>
     </div>
   );
 }
-
-export default App;
