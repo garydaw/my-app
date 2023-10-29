@@ -1,5 +1,5 @@
 import './App.css';
-import  Player from './Components/Player.js';
+import  UnitOverview from './Components/UnitOverview.js';
 import { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 
@@ -13,7 +13,10 @@ export default function App() {
   let getPlayerInfo = async () => {
     try {
         const data = await (await fetch(url + document.getElementById("playerId").value+'/')).json()
-        setPlayerUnits(data.units)
+        let units = data.units;
+
+        units.sort((a, b) => (a.data.power < b.data.power) ? 1 : -1)
+        setPlayerUnits(units)
     } catch (err) {
         console.log(err.message)
     }
@@ -34,20 +37,10 @@ export default function App() {
         
         <button className="form-control btn btn-primary" onClick={getPlayerInfo}>Search</button>
       </div>
-      <div className="row">
+      <div className="row row-cols-3">
         {playerUnits.map((unit, index) => {
           return (
-            <div
-              style={{
-                width: "15em",
-                backgroundColor: "#35D841",
-                padding: 2,
-                borderRadius: 10,
-                marginBlock: 10,
-              }}
-            >
-              <p style={{ fontSize: 20, color: 'white' }}>{unit.data.base_id}</p>
-            </div>
+              <UnitOverview unit={unit.data}></UnitOverview>
           );
         })}
       </div>
