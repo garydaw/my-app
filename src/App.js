@@ -11,54 +11,53 @@ export default function App() {
   const [playerUnits,setPlayerUnits] = useState([]);
   const [allUnits,setAllPlayerUnits] = useState([]);
   const [combatType,setCombatType] = useState("units");
+  const [className, setClass] = useState("btn-group mb-3 d-none");
+
 
   let getPlayerInfo = async () => {
     try {
-
         //get data
         const data = await (await fetch(url + document.getElementById("playerId").value+'/')).json()
 
-        setAllPlayerUnits(data.units.sort((a, b) => (a.data.power < b.data.power) ? 1 : -1));
+        document.getElementById("unitsRadio").checked = true;
+        setClass("btn-group mb-3");
 
-        showUnits();
-
-        
+        showUnits("units", data.units.sort((a, b) => (a.data.power < b.data.power) ? 1 : -1), true);
 
     } catch (err) {
         console.log(err.message)
     }
   }
+ 
 
-  function showUnits(){
+  function showUnits(newCombatType, data, set){
 
-    if(combatType == "units" ){
-      setPlayerUnits(allUnits.filter(checkUnits));
+    setCombatType(newCombatType);
+    if(set){
+      setAllPlayerUnits(data);
+    }
+    if(newCombatType === "units" ){
+      setPlayerUnits(data.filter(checkUnits));
     } else {
-      setPlayerUnits(allUnits.filter(checkShips));
+      setPlayerUnits(data.filter(checkShips));
     }
     
     function checkUnits(unit) {
-      return  unit.data.combat_type == 1;
+      return  unit.data.combat_type === 1;
     }
 
     function checkShips(unit) {
-      return  unit.data.combat_type == 2;
+      return  unit.data.combat_type === 2;
     }
 
   }
 
   let checkCombatType = async () => {
-    if(document.getElementById("unitsRadio").checked && combatType != "units"){
-      setCombatType("units");
-      showUnits();
-    } else if (document.getElementById("shipsRadio").checked && combatType != "ships"){
-      setCombatType("ships");
-      showUnits();
+    if(document.getElementById("unitsRadio").checked && combatType !== "units"){
+      showUnits("units", allUnits, false);
+    } else if (document.getElementById("shipsRadio").checked && combatType !== "ships"){
+      showUnits("ships", allUnits, false);
     }
-  }
-
-  let doNothing = async () => {
-    //nothing!
   }
 
   return (
@@ -78,13 +77,15 @@ export default function App() {
         <button className="form-control btn btn-primary" onClick={getPlayerInfo}>Search</button>
       </div>
       
-      <div className="btn-group mb-3" role="group" aria-label="Combat Selection">
-        <input type="radio" className="btn-check" name="combatType" id="unitsRadio" autoComplete="off" onChange={doNothing} onClick={checkCombatType}></input>
-        <label className="btn btn-outline-primary" for="unitsRadio">Units</label>
+      
+      <div className={className} role="group" aria-label="Combat Selection">
+        <input type="radio" className="btn-check" name="combatType" id="unitsRadio" autoComplete="off" onClick={checkCombatType}></input>
+        <label className="btn btn-outline-primary" htmlFor="unitsRadio">Units</label>
 
         <input type="radio" className="btn-check" name="combatType" id="shipsRadio" autoComplete="off" onClick={checkCombatType}></input>
-        <label className="btn btn-outline-primary" for="shipsRadio">Ships</label>
+        <label className="btn btn-outline-primary" htmlFor="shipsRadio">Ships</label>
       </div>
+      
 
       <div className="row row-cols-3">
         {playerUnits.map((unit, index) => {
